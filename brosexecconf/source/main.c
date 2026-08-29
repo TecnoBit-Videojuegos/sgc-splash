@@ -24,8 +24,11 @@
 
 /* --- Animacion tipo flipbook (agregado para SGC) --- */
 #define ANIM_FRAME_COUNT 48       /* cuantos frames totales tenes */
-#define ANIM_FRAME_SKIP  8        /* cada cuantos VSync avanza un frame */
-                                   /* NTSC = 60 vsyncs/seg -> 60/8 = 7.5 fps aprox */
+#define ANIM_FRAME_SKIP  20       /* cada cuantos VSync avanza un frame */
+                                   /* NTSC = 60 vsyncs/seg -> 60/20 = 3 fps aprox */
+                                   /* (subido para que el efecto de revelado */
+                                   /*  se note, ahora que los frames livianos */
+                                   /*  se leen/dibujan casi al instante) */
 #define ANIM_DIR "fat:/autoboot/"  /* carpeta donde estan los frame_XXXX.png */
 
 static int anim_curr_frame = 1;
@@ -309,7 +312,9 @@ void waitA(){
 }
 
 #ifdef USEBACKGROUND
-/* Decodifica y pinta un frame de la animacion directo en xfb.
+/* Decodifica y pinta un frame de la animacion directo en xfb, CENTRADO
+   en la pantalla de 640x480 (util cuando los frames son mas chicos,
+   por ejemplo 320x240, para aliviar la lectura de la SD).
    frame_num va de 1 a ANIM_FRAME_COUNT. Si falla, no rompe nada,
    simplemente se queda con lo que ya estaba pintado. */
 void drawAnimFrame(int frame_num){
@@ -325,7 +330,16 @@ void drawAnimFrame(int frame_num){
 	}
 
 	if (PNGU_GetImageProperties(ctx, &imgProp) == PNGU_OK){
-		PNGU_DecodeToYCbYCr(ctx, imgProp.imgWidth, imgProp.imgHeight, xfb, 640 - imgProp.imgWidth);
+		int offset_x = (640 - (int)imgProp.imgWidth) / 2;
+		int offset_y = (480 - (int)imgProp.imgHeight) / 2;
+		if (offset_x < 0) offset_x = 0;
+		if (offset_y < 0) offset_y = 0;
+		/* El framebuffer de GameCube usa YUV422: 2 bytes por pixel,
+		   640 pixeles de ancho por linea -> 1280 bytes por fila.
+		   Nos movemos "offset_y" filas hacia abajo y "offset_x"
+		   pixeles hacia la derecha antes de empezar a dibujar. */
+		u8 *dest = (u8*)xfb + (offset_y * 640 * 2) + (offset_x * 2);
+		PNGU_DecodeToYCbYCr(ctx, imgProp.imgWidth, imgProp.imgHeight, dest, 640 - imgProp.imgWidth);
 	}
 
 	PNGU_ReleaseImageContext(ctx);
