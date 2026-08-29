@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: devkitpro/devkitppc:latest
+      image: devkitpro/devkitppc:20200704
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
