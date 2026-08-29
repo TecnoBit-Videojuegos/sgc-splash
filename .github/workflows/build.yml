@@ -1,0 +1,30 @@
+name: build
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: devkitpro/devkitppc:latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build brosexecconf (back/animated version)
+        shell: bash
+        run: |
+          cd brosexecconf
+          cp Makefile.back Makefile
+          make clean
+          make
+
+      - name: Upload compiled dol
+        uses: actions/upload-artifact@v4
+        with:
+          name: brosexecconf-back-animado
+          path: brosexecconf/brosexecconf-back.dol
+          if-no-files-found: error
