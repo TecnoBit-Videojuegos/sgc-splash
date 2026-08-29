@@ -12,7 +12,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Find zlib.h and libpng inside the image
+      - name: Build brosexecconf inside old devkitPPC container
         run: |
-          docker run --rm devkitpro/devkitppc:20200704 \
-            bash -c "find / -iname 'zlib.h' 2>/dev/null; echo '---'; find / -iname 'png.h' 2>/dev/null"
+          docker run --rm -v "${{ github.workspace }}:/workspace" -w /workspace/brosexecconf devkitpro/devkitppc:20200704 \
+            bash -c "cp Makefile.back Makefile && sed -i 's|^LIBDIRS.*|LIBDIRS := \$(CURDIR) \$(PORTLIBS)|' Makefile && cat Makefile | grep LIBDIRS && make clean && make"
+
+      - name: Upload compiled dol
+        uses: actions/upload-artifact@v4
+        with:
+          name: brosexecconf-back-animado
+          path: brosexecconf/brosexecconf-back.dol
+          if-no-files-found: error
