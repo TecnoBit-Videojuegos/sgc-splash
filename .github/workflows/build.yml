@@ -15,7 +15,7 @@ jobs:
       - name: Build brosexecconf inside old devkitPPC container
         run: |
           docker run --rm -v "${{ github.workspace }}:/workspace" -w /workspace/brosexecconf devkitpro/devkitppc:20200704 \
-            bash -c "cp Makefile.back Makefile && make clean && make"
+            bash -c "pacman -Sy --noconfirm ppc-zlib ppc-libpng && cp Makefile.back Makefile && sed -i 's|^LIBDIRS.*|LIBDIRS := \$(CURDIR) \$(PORTLIBS)|' Makefile && cat Makefile | grep LIBDIRS && make clean && make"
 
       - name: Upload compiled dol
         uses: actions/upload-artifact@v4
