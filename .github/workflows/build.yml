@@ -8,19 +8,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: devkitpro/devkitppc:20200704
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Build brosexecconf (back/animated version)
-        shell: bash
+      - name: Build brosexecconf inside old devkitPPC container
         run: |
-          cd brosexecconf
-          cp Makefile.back Makefile
-          make clean
-          make
+          docker run --rm -v "${{ github.workspace }}:/workspace" -w /workspace/brosexecconf devkitpro/devkitppc:20200704 \
+            bash -c "cp Makefile.back Makefile && make clean && make"
 
       - name: Upload compiled dol
         uses: actions/upload-artifact@v4
