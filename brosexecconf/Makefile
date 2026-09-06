@@ -15,7 +15,7 @@ include $(DEVKITPPC)/gamecube_rules
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing extra header files
 #---------------------------------------------------------------------------------
-TARGET		:=	brosexecconf-back
+TARGET		:=	IPL
 BUILD		:=	build
 SOURCES		:=	source source/aram source/libpng source/libpng/pngu
 DATA		:=	data
