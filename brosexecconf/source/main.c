@@ -34,13 +34,12 @@
 static int anim_curr_frame = 1;
 static int anim_vsync_count = 0;
 
-
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
 
 void (*PSOreload)() = (void(*)())0x80001800;
-void Initialise() {
 
+void Initialise() {
 	VIDEO_Init();
 	PAD_Init();
  
@@ -55,70 +54,38 @@ void Initialise() {
 	VIDEO_Flush();
 	VIDEO_WaitVSync();
 	if(rmode->viTVMode&VI_NON_INTERLACE) VIDEO_WaitVSync();
-
 }
 
+/* --- Modificado para soportar Slot A, Slot B y SD2SP2 --- */
 static int initFAT(){
-
-	int slotagecko = 0;
-	int i =0;
-	s32 ret, memsize, sectsize;
-
-	for(i=0;i<10;i++){
-		ret = CARD_ProbeEx(CARD_SLOTA, &memsize, &sectsize);
-		//myprintf("Ret: %d", ret);
-		if (ret == CARD_ERROR_WRONGDEVICE){
-			slotagecko = 1;
-			break;
+	// 1. Intentar detectar y montar Slot A (Memory Card Slot A)
+	__io_gcsda.startup();
+	if (__io_gcsda.isInserted()) {
+		if (fatMountSimple("fat", &__io_gcsda)) {
+			return 1;
 		}
 	}
 
-	if (slotagecko)
-	{//Memcard in SLOT B, SD gecko in SLOT A
-		//This will ensure SD gecko is recognized if inserted or changed to another slot after GCMM is executed
-		for(i=0;i<10;i++){
-			ret = CARD_Probe(CARD_SLOTA);
-			if (ret == CARD_ERROR_WRONGDEVICE)
-				//myprintf ("SDGecko detected...\n\n");
-				break;
-		}
-		__io_gcsda.startup();
-		if (!__io_gcsda.isInserted())
-		{
-			//myprintf ("No SD Gecko inserted! Using embedded config.\n\n");
-			return 0;
-		}
-		if (!fatMountSimple ("fat", &__io_gcsda))
-		{
-			//myprintf("Error Mounting SD fat! Using embedded config.\n\n");
-			return 0;
-		}
-	}else //Memcard in SLOT A, SD gecko in SLOT B
-	{
-		//This will ensure SD gecko is recognized if inserted or changed to another slot after GCMM is executed
-		for(i=0;i<10;i++){
-			ret = CARD_Probe(CARD_SLOTB);
-			if (ret == CARD_ERROR_WRONGDEVICE)
-				break;
-		}	
-		__io_gcsdb.startup();
-		if (!__io_gcsdb.isInserted())
-		{
-			//myprintf ("No SD Gecko inserted! Using default config.\n\n");
-			return 0;
-		}
-		if (!fatMountSimple ("fat", &__io_gcsdb))
-		{
-			//myprintf("Error Mounting SD fat! Using default config.\n\n");
-			return 0;
+	// 2. Intentar detectar y montar Slot B (Memory Card Slot B)
+	__io_gcsdb.startup();
+	if (__io_gcsdb.isInserted()) {
+		if (fatMountSimple("fat", &__io_gcsdb)) {
+			return 1;
 		}
 	}
 
-	return 1;
+	// 3. Intentar detectar y montar SD2SP2 (Serial Port 2)
+	__io_gcsd2.startup();
+	if (__io_gcsd2.isInserted()) {
+		if (fatMountSimple("fat", &__io_gcsd2)) {
+			return 1;
+		}
+	}
+
+	return 0; // No se encontró SD en ningún puerto
 }
 
 //Config
-
 	int timer = -1;
 	char image[256];
 	int printflag = 0;
@@ -312,11 +279,7 @@ void waitA(){
 }
 
 #ifdef USEBACKGROUND
-/* Decodifica y pinta un frame de la animacion directo en xfb, CENTRADO
-   en la pantalla de 640x480 (util cuando los frames son mas chicos,
-   por ejemplo 320x240, para aliviar la lectura de la SD).
-   frame_num va de 1 a ANIM_FRAME_COUNT. Si falla, no rompe nada,
-   simplemente se queda con lo que ya estaba pintado. */
+/* Decodifica y pinta un frame de la animacion directo en xfb, CENTRADO */
 void drawAnimFrame(int frame_num){
 	char framepath[300];
 	sprintf(framepath, "%sframe_%04d.png", ANIM_DIR, frame_num);
@@ -334,10 +297,7 @@ void drawAnimFrame(int frame_num){
 		int offset_y = (480 - (int)imgProp.imgHeight) / 2;
 		if (offset_x < 0) offset_x = 0;
 		if (offset_y < 0) offset_y = 0;
-		/* El framebuffer de GameCube usa YUV422: 2 bytes por pixel,
-		   640 pixeles de ancho por linea -> 1280 bytes por fila.
-		   Nos movemos "offset_y" filas hacia abajo y "offset_x"
-		   pixeles hacia la derecha antes de empezar a dibujar. */
+
 		u8 *dest = (u8*)xfb + (offset_y * 640 * 2) + (offset_x * 2);
 		PNGU_DecodeToYCbYCr(ctx, imgProp.imgWidth, imgProp.imgHeight, dest, 640 - imgProp.imgWidth);
 	}
@@ -345,7 +305,6 @@ void drawAnimFrame(int frame_num){
 	PNGU_ReleaseImageContext(ctx);
 }
 #endif
-
 
 int main(int argc, char *argv[])
 {
@@ -359,7 +318,7 @@ int main(int argc, char *argv[])
 		if (!have_sd){
 			while(1){
 				printf("\x1b[4;5H");
-				printf("Couldn't mount SD Gecko. Insert one now and press A.\n");
+				printf("Couldn't mount SD. Insert card and press A.\n");
 				PAD_ScanPads();
 				if( PAD_ButtonsDown(0) & PAD_BUTTON_A ) {
 					break;
@@ -389,7 +348,7 @@ loopback:
 
 VIDEO_ClearFrameBuffer (rmode, xfb, COLOR_BLACK);
 #ifdef USEBACKGROUND
-	/* Primer frame de la animacion (antes se cargaba "image" una sola vez) */
+	/* Primer frame de la animacion */
 	anim_curr_frame = 1;
 	anim_vsync_count = 0;
 	drawAnimFrame(anim_curr_frame);
@@ -404,7 +363,6 @@ VIDEO_ClearFrameBuffer (rmode, xfb, COLOR_BLACK);
 		time(&now);
 		myprintf("\x1b[5;6H");
 		if (timer >=0){
-			//myprintf("Timer    : %d\n", timer);
 			myprintf(" Timer    : %02.0f\n", (double)timer - difftime(now, boottime));
 		}else{
 			myprintf(" Timer    : disabled\n");
@@ -423,16 +381,6 @@ VIDEO_ClearFrameBuffer (rmode, xfb, COLOR_BLACK);
 		myprintf("\x1b[19;6H Button RT: %s\n", (strlen(buttonRT_title)>1)?buttonRT_title:buttonRT);
 		myprintf("\x1b[20;6H Button S : %s\n", (strlen(buttonS_title)>1)?buttonS_title:buttonS);
 
-/*		
-		if (timer >=0){
-			myprintf("\x1b[4;50H");
-			myprintf("**********\n");
-			myprintf("\x1b[5;50H");
-			myprintf("*   %02.0f   *\n", (double)timer - difftime(now, boottime));
-			myprintf("\x1b[6;50H");
-			myprintf("**********\n");
-		}
-*/
 		PAD_ScanPads();
 
 		int buttonsDown = PAD_ButtonsDown(0);
@@ -480,34 +428,34 @@ VIDEO_ClearFrameBuffer (rmode, xfb, COLOR_BLACK);
 		if (boot){
 			fp = fopen ( bootpath, "rb" );
 			if (fp==NULL){
-				myprintf("\x1b[22;5H                                                                   ");
+				myprintf("\x1b[22;5H                                                                    ");
 				myprintf("\x1b[22;6H");
 				myprintf("Can't open %s, booting default dol.", bootpath);
 				strcpy(bootpath, def);
 				fp = fopen ( bootpath, "rb" );
 				if (fp==NULL){
 					if (strcmp(bootpath, "fat:/autoexec.dol") != 0){
-						myprintf("\x1b[23;5H                                                                   ");
+						myprintf("\x1b[23;5H                                                                    ");
 						myprintf("\x1b[23;6H");
 						myprintf("Can't open %s, booting autoexec.dol.", bootpath);
 						sprintf(bootpath, "fat:/autoexec.dol");
 						fp = fopen ( bootpath, "rb" );
 						if (fp==NULL) {
-							myprintf("\x1b[24;5H                                                                   ");
-							myprintf("\x1b[25;5H                                                                   ");
+							myprintf("\x1b[24;5H                                                                    ");
+							myprintf("\x1b[25;5H                                                                    ");
 							myprintf("\x1b[24;6H");
 							myprintf ("Failed to open autoexec.dol. It would be wise to have it at your\x1b[25;6Hsdcard root. Please, check your configuration file.\n\n");	
-							myprintf("\x1b[26;5H                                                                   ");
-							myprintf("\x1b[27;5H                                                                   ");
+							myprintf("\x1b[26;5H                                                                    ");
+							myprintf("\x1b[27;5H                                                                    ");
 							myprintf("\x1b[27;6H");
 						}
 					}else{
-							myprintf("\x1b[23;5H                                                                   ");
-							myprintf("\x1b[24;5H                                                                   ");
-							myprintf("\x1b[23;6H");
+						myprintf("\x1b[23;5H                                                                    ");
+						myprintf("\x1b[24;5H                                                                    ");
+						myprintf("\x1b[23;6H");
 						myprintf ("Failed to open autoexec.dol. It would be wise to have it at your\x1b[24;6Hsdcard root. Please, check your configuration file.\n\n");	
-						myprintf("\x1b[25;5H                                                                   ");
-						myprintf("\x1b[26;5H                                                                   ");
+						myprintf("\x1b[25;5H                                                                    ");
+						myprintf("\x1b[26;5H                                                                    ");
 						myprintf("\x1b[26;6H");
 					}
 				}
@@ -521,59 +469,53 @@ VIDEO_ClearFrameBuffer (rmode, xfb, COLOR_BLACK);
 					if (dol) {
 						fread(dol, 1, size, fp);
 						//CLI support
-							strcpy(clipath, bootpath);
-							clipath[strlen(clipath)-3]='c';
-							clipath[strlen(clipath)-2]='l';
-							clipath[strlen(clipath)-1]='i';
-							FILE * fp2;
-							int size2;
-							fp2 = fopen ( clipath, "rb" );
-							if (fp2!=NULL){
-								fseek(fp2, 0, SEEK_END);
-								size2 = ftell(fp2);
-								fseek(fp2, 0, SEEK_SET);
-								// Build a command line to pass to the DOL
-								int argc2 = 0;
-								char *argv2[1024];
-								char *cli_buffer = memalign(32, size2+1); // +1 to append null character if needed
-								if(cli_buffer) {
-									fread(cli_buffer, 1, size2, fp2);
-									fclose(fp2);
-									//add a terminating null character for last argument if needed
-									if (cli_buffer[size2-1] != '\0'){
-										cli_buffer[size2] = '\0';
-										size2 += 1;
-									}
+						strcpy(clipath, bootpath);
+						clipath[strlen(clipath)-3]='c';
+						clipath[strlen(clipath)-2]='l';
+						clipath[strlen(clipath)-1]='i';
+						FILE * fp2;
+						int size2;
+						fp2 = fopen ( clipath, "rb" );
+						if (fp2!=NULL){
+							fseek(fp2, 0, SEEK_END);
+							size2 = ftell(fp2);
+							fseek(fp2, 0, SEEK_SET);
+							int argc2 = 0;
+							char *argv2[1024];
+							char *cli_buffer = memalign(32, size2+1);
+							if(cli_buffer) {
+								fread(cli_buffer, 1, size2, fp2);
+								fclose(fp2);
+								if (cli_buffer[size2-1] != '\0'){
+									cli_buffer[size2] = '\0';
+									size2 += 1;
+								}
 
-									// CLI parse
-									argv2[argc2] = bootpath;
+								argv2[argc2] = bootpath;
+								argc2++;
+								if(cli_buffer[0] != '\r' && cli_buffer[0] != '\n') {
+									argv2[argc2] = cli_buffer;
 									argc2++;
-									// First argument is at the beginning of the file
-									if(cli_buffer[0] != '\r' && cli_buffer[0] != '\n') {
-										argv2[argc2] = cli_buffer;
-										argc2++;
+								}
+								int i;
+								for(i = 0; i < size2; i++) {
+									if(cli_buffer[i] == '\r' || cli_buffer[i] == '\n') {
+										cli_buffer[i] = '\0';
 									}
-									// Search for the others after each newline
-									int i;
-									for(i = 0; i < size2; i++) {
-										if(cli_buffer[i] == '\r' || cli_buffer[i] == '\n') {
-											cli_buffer[i] = '\0';
-										}
-										else if(cli_buffer[i - 1] == '\0') {
-											argv2[argc2] = cli_buffer + i;
-											argc2++;
+									else if(cli_buffer[i - 1] == '\0') {
+										argv2[argc2] = cli_buffer + i;
+										argc2++;
 
-											if(argc2 >= 1024)
-												break;
-										}
+										if(argc2 >= 1024)
+											break;
 									}
 								}
-								DOLtoARAM(dol, argc2, argc2 == 0 ? NULL : argv2);
-							}else{
-								DOLtoARAM(dol, 0, NULL);
 							}
+							DOLtoARAM(dol, argc2, argc2 == 0 ? NULL : argv2);
+						}else{
+							DOLtoARAM(dol, 0, NULL);
+						}
 					}
-					//We shouldn't reach this point
 					if (dol != NULL) free(dol);
 					myprintf("Not a valid dol File! ");
 				}
