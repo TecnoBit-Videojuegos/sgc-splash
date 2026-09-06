@@ -1,114 +1,85 @@
-SGC Splash / AutoExec DOL Launcher (Animación + SD2SP2)
-¡Bienvenido! Este proyecto es un bootloader (cargador inicial) y pantalla de inicio (splash screen) altamente configurable para la consola Nintendo GameCube.
+<div align="center">
 
-Permite:
+# 🌀 SGC Splash / AutoExec DOL Launcher
 
-Iniciar automáticamente una aplicación por defecto (como Swiss) al encender la consola.
+### *Animación + SD2SP2 para Nintendo GameCube*
 
-Cargar aplicaciones alternativas manteniendo presionado un botón del control de GameCube.
+---
 
-Muestra una secuencia de imágenes animada (20 fotogramas PNG) en pantalla mientras se ejecuta la cuenta regresiva o espera la entrada del usuario.
+![Console](https://img.shields.io/badge/Console-Nintendo%20GameCube-000000?style=for-the-badge&logo=nintendo&logoColor=6A5ACD)
+![Storage](https://img.shields.io/badge/Storage-SD2SP2%20%7C%20SD%20Gecko-blue?style=for-the-badge)
+![FileSystem](https://img.shields.io/badge/FileSystem-FAT32-green?style=for-the-badge)
 
-📋 Requisitos Previos
-Nintendo GameCube configurada para ejecutar archivos .dol al encender (PicoBoot, FlippyDrive, Modchip, GC Loader, IPL replacement, etc.).
+</div>
 
-Lector de tarjeta SD para GameCube:
+---
 
-SD2SP2 (Puerto Serial Port 2 - Prioridad principal)
+## 📖 Descripción
 
-SD Gecko (Adaptador de tarjeta SD en Ranura Memory Card A o B)
+Un **bootloader y pantalla de inicio (splash screen)** para Nintendo GameCube que permite reproducir una secuencia de imágenes animadas al encender la consola y cargar automáticamente tu ejecutable por defecto (como **Swiss**) o aplicaciones alternativas mediante el control.
 
-Tarjeta MicroSD / SD formateada obligatoriamente en FAT32.
+---
 
-🚀 Guía de Instalación Rápida Paso a Paso
-Sigue estos sencillos pasos para dejar todo listo en tu tarjeta SD:
+## ⚡ Características Principales
 
-Paso 1: Descargar los archivos del proyecto
-Ve a la sección de [Releases / Lanzamientos] de este repositorio y descarga los dos archivos:
+* 🎬 **Animación Fluida:** Carga secuencias de imágenes PNG (`frame_0001.png` a `frame_0020.png`).
+* 🚀 **Auto-Boot Directo:** Ejecuta `boot.dol` automáticamente al finalizar el temporizador.
+* 🎮 **Mapeo de Botones:** Inicia aplicaciones secundarias manteniendo presionado cualquier botón (A, B, X, Y, L, R, Z, Start).
+* 💾 **Alta Compatibilidad:** Soporte primario para **SD2SP2** y adaptador **SD Gecko**.
 
-IPL.dol (Ejecutable principal del lanzador).
+---
 
-autoboot.rar (Carpeta comprimida con la animación y la configuración).
+## 📋 Requisitos Previos
 
-Paso 2: Extraer la carpeta autoboot
-Descomprime el archivo autoboot.rar en tu computadora.
+1. **Nintendo GameCube** modificada (PicoBoot, FlippyDrive, Modchip, GC Loader, IPL Replacement, etc.).
+2. Adaptador de tarjeta SD (**SD2SP2** recomendado en el Serial Port 2).
+3. Tarjeta MicroSD / SD formateada estrictamente en **FAT32**.
 
-Copia la carpeta autoboot resultante directamente a la raíz (raíz principal) de tu tarjeta SD.
+---
 
-Dentro de la carpeta autoboot/ en la SD debes tener:
+## 🚀 Guía de Instalación Paso a Paso
 
-El archivo de configuración autoconf.txt.
+### 1️⃣ Descargar los archivos
+Desde la sección de **Releases** de este repositorio, descarga:
+* `IPL.dol` *(Lanzador principal)*
+* `autoboot.rar` *(Archivos de sistema y animación)*
 
-Los 20 fotogramas de la animación (frame_0001.png hasta frame_0020.png).
+### 2️⃣ Configurar la tarjeta SD
+Descomprime el archivo `autoboot.rar` y copia la carpeta `autoboot` resultante directamente a la raíz de tu tarjeta SD. Copia también el archivo `IPL.dol` a la raíz.
 
-Paso 3: Copiar el archivo ejecutable (IPL.dol)
-Copia el archivo IPL.dol directamente a la raíz de tu tarjeta SD (o renómbralo si la configuración de tu modchip/bootloader lo requiere, como en PicoBoot).
+### 3️⃣ Renombrar tu aplicación por defecto
+Toma el ejecutable de **Swiss** (o la app que desees), renómbralo a **`boot.dol`** y colócalo en la raíz.
 
-Paso 4: Colocar tu aplicación principal (boot.dol)
-Descarga la última versión de Swiss (o la aplicación que desees iniciar por defecto).
+---
 
-Renombra el archivo .dol de Swiss a boot.dol.
+## 📂 Estructura Final en la Tarjeta SD
 
-Copia el archivo boot.dol en la raíz de tu tarjeta SD.
-
-📂 Estructura Final en la Tarjeta SD
-Una vez que extraigas y copies los archivos, el contenido de tu tarjeta SD debe verse exactamente así:
-
-Plaintext
 Tarjeta SD (FAT32)/
-├── IPL.dol                   <-- Lanzador SGC Splash
-├── boot.dol                  <-- Aplicación por defecto a lanzar (ej. Swiss)
-└── autoboot/
-    ├── autoconf.txt          <-- Archivo de configuración del bootloader
-    ├── frame_0001.png        <-- Fotograma 1 de la animación
-    ├── frame_0002.png        <-- Fotograma 2 de la animación
-    ├── ...
-    └── frame_0020.png        <-- Fotograma 20 de la animación
-⚙️ Personalización de autoconf.txt
-Puedes abrir y editar el archivo /autoboot/autoconf.txt con cualquier editor de texto (como el Bloc de Notas) en tu computadora:
+├── 📄 IPL.dol                   <-- Bootloader SGC Splash
+├── ⚙️ boot.dol                  <-- Aplicación principal (ej. Swiss)
+└── 📁 autoboot/
+    ├── 📝 autoconf.txt          <-- Configuración
+    ├── 🖼️ frame_0001.png        <-- Animación (Fotograma 1)
+    ├── 🖼️ frame_0002.png        <-- Animación (Fotograma 2)
+    └── 🖼️ ... (hasta frame_0020.png)
 
-Opciones Disponibles:
-TIMER=9: Tiempo en segundos antes de ejecutar boot.dol automáticamente. (Usa -1 para desactivar el temporizador y esperar input).
+---
 
-NOPRINT=1:
+## ⚙️ Configuración (autoconf.txt)
 
-1 = Oculta los textos en pantalla (ideal para una animación limpia).
+Abre `/autoboot/autoconf.txt` con cualquier editor de texto para ajustar los parámetros:
 
-0 = Muestra el texto de información de carga en pantalla.
+* **TIMER=9**: Tiempo en segundos de la cuenta regresiva antes de arrancar `boot.dol`. Usa `-1` para esperar un botón.
+* **NOPRINT=1**: `1` oculta los textos en pantalla para una animación limpia. `0` muestra texto de carga.
+* **DEFAULT=fat:/boot.dol**: Ruta de la aplicación que arranca al vencer el temporizador.
+* **A=fat:/autoboot/autoexecA.dol**: Mapeo de botones (A, B, X, Y, L, R, ZT, S).
 
-DEFAULT=fat:/boot.dol: Ruta de la aplicación que se ejecutará al finalizar la cuenta regresiva.
+> ⚠️ **Nota de compatibilidad:** Las rutas y nombres de archivos son estrictamente **sensibles a mayúsculas y minúsculas** (*Case Sensitive*).
 
-Asignación de Botones en el Control:
-Puedes asignar otros ejecutables .dol manteniendo presionado un botón del control al encender la consola:
+---
 
-A=fat:/autoboot/autoexecA.dol (Al presionar botón A)
+## 🔍 Solución de Problemas
 
-B=fat:/autoboot/autoexecB.dol (Al presionar botón B)
-
-X=, Y=, L=, R=, ZT= (Botón Z), S= (Botón Start)
-
-⚠️ Importante: Las rutas y los nombres de archivos son sensibles a mayúsculas y minúsculas (Case Sensitive). Respeta las minúsculas y mayúsculas exactamente como están en la SD.
-
-🎨 Cambiar la Animación
-Si deseas reemplazar las imágenes de la animación:
-
-Reemplaza los archivos dentro de la carpeta /autoboot/.
-
-Las imágenes deben estar en formato PNG (mantiene la resolución recomendada de 640x480 o relación 4:3).
-
-Nómbralas usando 4 dígitos secuenciales: frame_0001.png, frame_0002.png, etc.
-
-🔍 Solución de Problemas Frecuentes
-Pantalla negra al encender:
-
-Verifica que la tarjeta SD esté formateada en FAT32 (exFAT o NTFS no son compatibles).
-
-Asegúrate de que el lector SD2SP2 o SD Gecko esté bien insertado.
-
-No muestra la animación:
-
-Comprueba que la carpeta se llame exactamente autoboot (todo en minúsculas) y esté ubicada en la raíz de la SD.
-
-No inicia Swiss / boot.dol:
-
-Revisa que el ejecutable en la raíz de la SD se llame exactamente boot.dol.
+* **Pantalla Negra:** Formatea la tarjeta SD en **FAT32** con clústeres de 32KB.
+* **Sin Animación:** La carpeta debe llamarse exactamente `autoboot` en minúsculas y estar en la raíz.
+* **No carga Swiss:** Confirma que el ejecutable en la raíz se llame exactamente `boot.dol`.
