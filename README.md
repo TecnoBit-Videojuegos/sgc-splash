@@ -6,9 +6,7 @@
 
 ---
 
-<a href="#" onclick="return false;" style="cursor: default; pointer-events: none;"><img src="https://img.shields.io/badge/Console-Nintendo%20GameCube-000000?style=for-the-badge&logo=nintendo&logoColor=6A5ACD" alt="Console" style="pointer-events: none;" /></a>
-<a href="#" onclick="return false;" style="cursor: default; pointer-events: none;"><img src="https://img.shields.io/badge/Storage-SD2SP2%20%7C%20SD%20Gecko-blue?style=for-the-badge" alt="Storage" style="pointer-events: none;" /></a>
-<a href="#" onclick="return false;" style="cursor: default; pointer-events: none;"><img src="https://img.shields.io/badge/FileSystem-FAT32-green?style=for-the-badge" alt="FileSystem" style="pointer-events: none;" /></a>
+<img src="URL_DE_TU_GIF_O_IMAGEN_AQUI" alt="SGC Splash Preview" width="550" />
 
 </div>
 
@@ -39,16 +37,27 @@ Un **bootloader y pantalla de inicio (splash screen)** para Nintendo GameCube qu
 
 ## 🚀 Guía de Instalación Paso a Paso
 
-### 1️⃣ Descargar los archivos
-Desde la sección de **Releases** de este repositorio, descarga:
-* `IPL.dol` *(Lanzador principal)*
-* `autoboot.rar` *(Archivos de sistema y animación)*
+### 1️⃣ Descargar los archivos necesarios
+Ve a la sección de **Releases / Lanzamientos** de este repositorio y descarga los **dos archivos** disponibles:
+* **`IPL.dol`**: Ejecutable principal del cargador.
+* **`autoboot.rar`**: Archivo comprimido que contiene la carpeta con la animación y la configuración.
 
-### 2️⃣ Configurar la tarjeta SD
-Descomprime el archivo `autoboot.rar` y copia la carpeta `autoboot` resultante directamente a la raíz de tu tarjeta SD. Copia también el archivo `IPL.dol` a la raíz.
+---
 
-### 3️⃣ Renombrar tu aplicación por defecto
-Toma el ejecutable de **Swiss** (o la app que desees), renómbralo a **`boot.dol`** y colócalo en la raíz.
+### 2️⃣ Extraer y copiar el contenido a la SD
+
+1. **Copiar el ejecutable:**
+   * Toma el archivo **`IPL.dol`** descargado y cópialo directamente a la **raíz de tu tarjeta SD**.
+   *(Nota: Si utilizas PicoBoot u otro sistema que requiera un nombre específico, renómbralo según la exigencia de tu modchip).*
+
+2. **Extraer la carpeta de animación:**
+   * Descomprime el archivo **`autoboot.rar`** en tu computadora.
+   * Copia la carpeta **`autoboot`** extraída directamente a la **raíz de la tarjeta SD**.
+   *(Asegúrate de que dentro de `autoboot/` queden el archivo `autoconf.txt` y la secuencia de imágenes `frame_0001.png` a `frame_0020.png`).*
+
+3. **Colocar tu aplicación principal:**
+   * Descarga la última versión de **Swiss** (o la aplicación que quieras iniciar por defecto).
+   * Renombra el ejecutable `.dol` de Swiss a **`boot.dol`** y colócalo en la **raíz de la tarjeta SD**.
 
 ---
 
@@ -67,21 +76,21 @@ Tarjeta SD (FAT32)/
 
 ---
 
-## ⚙️ Configuración (autoconf.txt)
+## ⚙️ Configuración (`autoconf.txt`)
 
 Abre `/autoboot/autoconf.txt` con cualquier editor de texto para ajustar los parámetros:
 
-* **TIMER=9**: Tiempo en segundos de la cuenta regresiva antes de arrancar `boot.dol`. Usa `-1` para esperar un botón.
-* **NOPRINT=1**: `1` oculta los textos en pantalla para una animación limpia. `0` muestra texto de carga.
-* **DEFAULT=fat:/boot.dol**: Ruta de la aplicación que arranca al vencer el temporizador.
-* **A=fat:/autoboot/autoexecA.dol**: Mapeo de botones (A, B, X, Y, L, R, ZT, S).
+* **`TIMER=9`**: Tiempo en segundos de la cuenta regresiva antes de arrancar `boot.dol`. Usa `-1` para esperar la entrada de un botón.
+* **`NOPRINT=1`**: `1` oculta los textos en pantalla para una animación limpia. `0` muestra texto de carga.
+* **`DEFAULT=fat:/boot.dol`**: Ruta de la aplicación que arranca al vencer el temporizador.
+* **`A=fat:/autoboot/autoexecA.dol`**: Mapeo de botones del control (A, B, X, Y, L, R, ZT, S).
 
-> ⚠️ **Nota de compatibilidad:** Las rutas y nombres de archivos son estrictamente **sensibles a mayúsculas y minúsculas** (*Case Sensitive*).
+> ⚠️ **Nota de compatibilidad:** Las rutas y nombres de archivos en la tarjeta SD son estrictamente **sensibles a mayúsculas y minúsculas** (*Case Sensitive*).
 
 ---
 
 ## 🔍 Solución de Problemas
 
-* **Pantalla Negra:** Formatea la tarjeta SD en **FAT32** con clústeres de 32KB.
-* **Sin Animación:** La carpeta debe llamarse exactamente `autoboot` en minúsculas y estar en la raíz.
-* **No carga Swiss:** Confirma que el ejecutable en la raíz se llame exactamente `boot.dol`.
+* **Pantalla Negra:** Formatea la tarjeta SD en **FAT32** (clústeres de 32KB recomendados).
+* **Sin Animación:** La carpeta extraída debe llamarse exactamente `autoboot` (todo en minúsculas) y estar ubicada en la raíz.
+* **No carga Swiss:** Confirma que el ejecutable de Swiss en la raíz esté renombrado exactamente a `boot.dol`.
