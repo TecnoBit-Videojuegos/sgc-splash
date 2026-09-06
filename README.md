@@ -7,9 +7,6 @@
 ---
 <img width="640" height="480" alt="demo" src="https://github.com/user-attachments/assets/fc77b6ad-8722-4299-b355-632080e8cec0" />
 
-
-<img src="URL_DE_TU_GIF_O_IMAGEN_AQUI" alt="SGC Splash Preview" width="550" />
-
 </div>
 
 ---
