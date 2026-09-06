@@ -63,6 +63,7 @@ Ve a la sección de **Releases / Lanzamientos** de este repositorio y descarga l
 ## 📂 Estructura Final en la Tarjeta SD
 
 Así debe lucir la raíz de tu tarjeta MicroSD/SD en la computadora:
+
 <img width="876" height="343" alt="75f86f94-a3c7-43df-9fa5-19a34b125a3a" src="https://github.com/user-attachments/assets/727b20f5-05d2-4037-a863-c949f63031c6" />
 
 
