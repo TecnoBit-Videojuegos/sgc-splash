@@ -54,14 +54,16 @@ Toma el ejecutable de **Swiss** (o la app que desees), renómbralo a **`boot.dol
 
 ## 📂 Estructura Final en la Tarjeta SD
 
+<pre>
 Tarjeta SD (FAT32)/
-├── 📄 IPL.dol                   <-- Bootloader SGC Splash
-├── ⚙️ boot.dol                  <-- Aplicación principal (ej. Swiss)
+├── 📄 IPL.dol                   &lt;-- Bootloader SGC Splash
+├── ⚙️ boot.dol                  &lt;-- Aplicación principal (ej. Swiss)
 └── 📁 autoboot/
-    ├── 📝 autoconf.txt          <-- Configuración
-    ├── 🖼️ frame_0001.png        <-- Animación (Fotograma 1)
-    ├── 🖼️ frame_0002.png        <-- Animación (Fotograma 2)
+    ├── 📝 autoconf.txt          &lt;-- Configuración
+    ├── 🖼️ frame_0001.png        &lt;-- Animación (Fotograma 1)
+    ├── 🖼️ frame_0002.png        &lt;-- Animación (Fotograma 2)
     └── 🖼️ ... (hasta frame_0020.png)
+</pre>
 
 ---
 
