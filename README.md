@@ -6,9 +6,9 @@
 
 ---
 
-<img src="https://img.shields.io/badge/Console-Nintendo%20GameCube-000000?style=for-the-badge&logo=nintendo&logoColor=6A5ACD" alt="Console" />
-<img src="https://img.shields.io/badge/Storage-SD2SP2%20%7C%20SD%20Gecko-blue?style=for-the-badge" alt="Storage" />
-<img src="https://img.shields.io/badge/FileSystem-FAT32-green?style=for-the-badge" alt="FileSystem" />
+<a href="#" onclick="return false;" style="cursor: default; pointer-events: none;"><img src="https://img.shields.io/badge/Console-Nintendo%20GameCube-000000?style=for-the-badge&logo=nintendo&logoColor=6A5ACD" alt="Console" style="pointer-events: none;" /></a>
+<a href="#" onclick="return false;" style="cursor: default; pointer-events: none;"><img src="https://img.shields.io/badge/Storage-SD2SP2%20%7C%20SD%20Gecko-blue?style=for-the-badge" alt="Storage" style="pointer-events: none;" /></a>
+<a href="#" onclick="return false;" style="cursor: default; pointer-events: none;"><img src="https://img.shields.io/badge/FileSystem-FAT32-green?style=for-the-badge" alt="FileSystem" style="pointer-events: none;" /></a>
 
 </div>
 
