@@ -6,14 +6,6 @@
 
 ---
 
-![Console](https://img.shields.io/badge/Console-Nintendo%20GameCube-000000?style=for-the-badge&logo=nintendo&logoColor=6A5ACD)
-![Storage](https://img.shields.io/badge/Storage-SD2SP2%20%7C%20SD%20Gecko-blue?style=for-the-badge)
-![FileSystem](https://img.shields.io/badge/FileSystem-FAT32-green?style=for-the-badge)
-
-</div>
-
----
-
 ## 📖 Descripción
 
 Un **bootloader y pantalla de inicio (splash screen)** para Nintendo GameCube que permite reproducir una secuencia de imágenes animadas al encender la consola y cargar automáticamente tu ejecutable por defecto (como **Swiss**) o aplicaciones alternativas mediante el control.
